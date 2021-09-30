@@ -14,9 +14,6 @@ var firebaseConfig = {
   // initialize database
   const db = firebase.database();
   
-  // get user's data
-  const username = prompt("Please Tell Us Your Name");
-  
   // submit form
   // listen for submit event on the form and call the postChat function
   document.getElementById("message-form").addEventListener("submit", sendMessage);
