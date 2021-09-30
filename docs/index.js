@@ -1,4 +1,4 @@
-// Your web app's Firebase configuration
+// Configurazioni di Firebase
 var firebaseConfig = {
     apiKey: "AIzaSyAGbuU0gVgYKC4SHiHQWD2a0It2pR6ZuI8",
   authDomain: "prova1-cf972.firebaseapp.com",
@@ -8,66 +8,79 @@ var firebaseConfig = {
   messagingSenderId: "1084959353155",
   appId: "1:1084959353155:web:8ef090867dc5562209a7f6",
   };
-  // Initialize Firebase
+
+  // Inizializzare Firebase
   firebase.initializeApp(firebaseConfig);
   
-  // initialize database
+  // Inizializzare database
   const db = firebase.database();
-  
-  // submit form
-  // listen for submit event on the form and call the postChat function
-  document.getElementById("message-form").addEventListener("submit", sendMessage);
-  
-  // send message to db
-  function sendMessage(e) {
-    e.preventDefault();
-  
-    // get values to be submitted
-    const timestamp = Date.now();
-    const messageInput = document.getElementById("message-input");
-    const message = messageInput.value;
-  
-    // clear the input box
-    messageInput.value = "";
-  
-    //auto scroll to bottom
-    document
-      .getElementById("messages")
-      .scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-  
-    // create db collection and send in the data
-    db.ref("messages/" + timestamp).set({
-      username,
-      message,
-    });
-  }
+
+  // initialize variabili
+  const auth = firebase.auth();
+  const timestamp = Date.now();
+  var user;
   
   // display the messages
   // reference the collection created earlier
   const fetchChat = db.ref("messages/");
   
   // check for new messages using the onChildAdded event listener
-  fetchChat.on("child_added", function (snapshot) {
+  /*fetchChat.on("child_added", function (snapshot) {
     const messages = snapshot.val();
     const message = `<li class=${
       username === messages.username ? "sent" : "receive"
     }><span>${messages.username}: </span>${messages.message}</li>`;
     // append the message on the page
     document.getElementById("messages").innerHTML += message;
-  });
+  });*/
+  
+  // creare nuovo db per gli utenti
+  /*db.ref("users/" + Date.now()).set({
+    uid,
+    nickname,
+  });*/
+
+  const fetchUsers = db.ref("users/");
 
   function registerNewUser(){
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
+    var nickname = document.getElementById("nickname").value;
+    var uid;
 
-    console.log(email + " : " + password);
+    // creare account
+    user = firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+        console.log(error.code);
+        document.getElementById("login_error").innerHTML = error.message;
+        console.log(error.message);
+      });
 
-    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-      console.log(error.code);
-      console.log(error.message);
-    });
+    loginUser();
+    uid = user.uid;
+    console.log(user.uid);
+
+    db.ref("users/" + timestamp).set({
+        uid,
+        nickname,
+      });
+    
   }
 
+  function loginUser(){
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+
+    auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+        // Signed in 
+        user = userCredential.user;
+        // ...
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+    });
+}
 
   /* Helpers */
   function checkEmail(){
