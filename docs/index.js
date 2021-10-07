@@ -10,12 +10,12 @@ var firebaseConfig = {
   };
 
   // Inizializzare Firebase
-  firebase.initializeApp(firebaseConfig);
+  const app = firebase.initializeApp(firebaseConfig);
   
   // Inizializzare database
   const db = firebase.database();
 
-  // initialize variabili
+  // Inizializzare variabili
   const auth = firebase.auth();
   const timestamp = Date.now();
   var user;
@@ -25,22 +25,14 @@ var firebaseConfig = {
   const fetchChat = db.ref("messages/");
   
   // check for new messages using the onChildAdded event listener
-  /*fetchChat.on("child_added", function (snapshot) {
+  fetchChat.on("child_added", function (snapshot) {
     const messages = snapshot.val();
     const message = `<li class=${
       username === messages.username ? "sent" : "receive"
     }><span>${messages.username}: </span>${messages.message}</li>`;
     // append the message on the page
     document.getElementById("messages").innerHTML += message;
-  });*/
-  
-  // creare nuovo db per gli utenti
-  /*db.ref("users/" + Date.now()).set({
-    uid,
-    nickname,
-  });*/
-
-  const fetchUsers = db.ref("users/");
+  });
 
   function registerNewUser(){
     var email = document.getElementById("email").value;
@@ -49,44 +41,42 @@ var firebaseConfig = {
     var uid;
 
     // creare account
-    user = firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-        console.log(error.code);
-        document.getElementById("login_error").innerHTML = error.message;
-        console.log(error.message);
-      });
-
-    loginUser();
-    uid = user.uid;
-    console.log(user.uid);
-
-    db.ref("users/" + timestamp).set({
-        uid,
-        nickname,
-      });
-    
+    auth.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      // Signed in 
+      user = userCredential.user;
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(error.message);
+      // ..
+    });
   }
 
-  function registerUser(){
+  function loginUser(){
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
 
     auth.signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
-        // Signed in 
-        user = userCredential.user;
-        // ...
+      user = userCredential.user;
+      console.log(user);
+      window.open("chat.html", "_self");
     })
     .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        document.getElementById("login_error").innerHTML = error.message;
     });
 }
 
-  /* Helpers */
-  function checkEmail(){
-    email = document.getElementById('email').value;
-    if(!email.match(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/)){
-      alert("Inserire un indirizzo email valido");
-      document.getElementById('email').value = "";
-    }
+/* Helpers */
+function checkEmail(){
+  email = document.getElementById('email').value;
+  if(!email.match(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/)){
+    alert("Inserire un indirizzo email valido");
+    document.getElementById('email').value = "";
   }
+}

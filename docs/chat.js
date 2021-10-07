@@ -55,39 +55,3 @@ var firebaseConfig = {
     // append the message on the page
     document.getElementById("messages").innerHTML += message;
   });
-
-  const fetchUsers = db.ref("users/");
-
-  function registerNewUser(){
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
-
-  const auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-      const uid = user.uid;
-      console.log(uid);
-    } else {
-      console.log("user not logged");
-    }
-});
-
-    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-      console.log(error.code);
-      console.log(error.message);
-    });
-
-    
-  }
-
-
-  /* Helpers */
-  function checkEmail(){
-    email = document.getElementById('email').value;
-    if(!email.match(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/)){
-      alert("Inserire un indirizzo email valido");
-      document.getElementById('email').value = "";
-    }
-  }
