@@ -18,7 +18,7 @@ var firebaseConfig = {
   // Inizializzare variabili
   const auth = firebase.auth();
   const timestamp = Date.now();
-  var user;
+  const user = firebase.auth().currentUser;
 
   /* index.html */
   function registerNewUser(){
@@ -52,19 +52,11 @@ var firebaseConfig = {
 
     auth.signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      user = userCredential.user;
-      console.log(user);
       window.open("chat.html", "_self");
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        document.getElementById("login_error").innerHTML = error.message;
     });
 }
 
 /* chat.html */
-/*
 // submit form
   // listen for submit event on the form and call the postChat function
   //document.getElementById("message-form").addEventListener("submit", sendMessage);
@@ -88,7 +80,7 @@ var firebaseConfig = {
   
     // create db collection and send in the data
     db.ref("messages/" + timestamp).set({
-      username,
+      uid,
       message,
     });
   }
@@ -99,51 +91,76 @@ var firebaseConfig = {
   
   // check for new messages using the onChildAdded event listener
   fetchChat.on("child_added", function (snapshot) {
+    const user = firebase.auth().currentUser;
     const messages = snapshot.val();
     const message = `<li class=${
-      username === messages.username ? "sent" : "receive"
+      username === messages.uid ? "sent" : "receive"
     }><span>${messages.username}: </span>${messages.message}</li>`;
     // append the message on the page
     document.getElementById("messages").innerHTML += message;
-  });*/
+  });
+
+function viewAllUsers(){
+  console.log("esisto");
+  var dropdown = document.getElementById('members');
+  console.log(dropdown);
+
+  var users = new Array();
+
+  firebase.database().ref('users/').once('value', function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+      var childKey = childSnapshot.key;
+      var childData = childSnapshot.val();
+      if(childData.uid != firebase.auth().currentUser.uid){
+      document.getElementById('members').innerHTML += '<li><a class="dropdown-item" id="' + childData.nickname + '" onclick="addToChannel(this.innerHTML)" >' +  childData.nickname + '</a></li>';
+      }
+      console.log(childData.nickname);
+      users.push(childData);
+    });
+  });
+}
+
+function addToChannel(nickname){
+  console.log(nickname);
+  if(document.getElementById('names_of_channel').style.display == 'none'){
+    document.getElementById('names_of_channel').style.display = 'block';
+  }
+
+  document.getElementById('names_of_channel').innerHTML += '<li class="list-group-item list-group-item-action list-group-item-dark" onclick="this.remove()" id="' + nickname +'">' + nickname + '</li>';
+}
+
+function createChannel(){
+  var channel = document.getElementById('channel_name').value;
 
 
-  /*function listAllUsers() {
-   
-    // List batch of users, 1000 at a time.
-    admin.auth().listUsers(1000)
-     .then(function(listUsersResult) {
-      listUsersResult.users.forEach(function(userRecord) {
-       console.log(userRecord);
-       console.log("\n-----");
+  var nodes = document.getElementById('names_of_channel').childNodes;
+
+  for (var i = 1; i < nodes.length; i++) {
+    console.log(nodes[i].innerHTML);
+
+    db.ref('users').orderByChild('nickname').equalTo(nodes[i].innerHTML).once('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var nickname = childSnapshot.val().nickname;
+        var uid = childSnapshot.val().uid;
+        db.ref("channels/" + channel + "/" + uid).push({
+          uid,
+        });
       });
-      console.log("Toplam: " + say);
-      if (listUsersResult.pageToken) {
-       // List next batch of users.
-       //listAllUsers(listUsersResult.pageToken)
-      }
-     })
-     .catch(function(error) {
-      console.log("Error listing users:", error);
-     });
-   }
-
-   listAllUsers();*/
-
-  function viewAllUsers(){
-    console.log("esisto");
-    var users = new Array();
-    var dropdown = document.getElementById('members');
-    console.log(dropdown);
-    var starCountRef = firebase.database().ref('users/');
-    starCountRef.on('value', (snapshot) => {
-      users = snapshot.val();
-      for (var i = 0; i < users.length; i++) {
-        console.log("hexyy");
-        document.getElementById('members').innerHTML += '<li><a class="dropdown-item" id="' + users[i].uid+ '">' +  nickname + '</a></li>';
-      }
     });
   }
+}
+
+function loadChannels(){
+  db.ref('channels/').once('value', function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+      const user = firebase.auth().currentUser;
+      var channel = childSnapshot.key;
+      if(snapshot.child(channel).child(user.uid).exists()){
+        document.getElementById('channels').innerHTML += '<a class="list-group-item list-group-item-action list-group-item-dark" id="' + channel + '">' + channel +'</a>';
+      }
+    });
+  });
+}
 
 /* Helpers */
 function checkEmail(){

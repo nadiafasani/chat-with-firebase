@@ -20,7 +20,7 @@
     <script src="index.js"></script>
 
   </head>
-  <body>
+  <body onload="loadChannels()">
 
     <div class="container-fluid">
       <div class="row">
@@ -61,59 +61,15 @@
       <div class="row">
         <div class="col-3 h-100">
           <!-- Channels -->
-          <div class="card" style="width: 18rem;">
-            <ul class="list-group list-group-flush">
-              <div class="list-group-item border-0">
-                <a class="list-group-item list-group-item-action active text-white">
-                  <div class="media">
-                    <div class="media-body ml-4">
-                      <div class="d-flex align-items-center justify-content-between mb-1">
-                        <h6 class="mb-0">Channel</h6><small class="small font-weight-bold">25 Set</small>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              <div class="list-group-item border-0" onclick="console.log('click');">
-                <a class="list-group-item list-group-item-action active text-white">
-                  <div class="media">
-                    <div class="media-body ml-4">
-                      <div class="d-flex align-items-center justify-content-between mb-1">
-                        <h6 class="mb-0">Channel 1 </h6><small class="small font-weight-bold">5 Oct</small>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              <div class="list-group-item border-0">
-                <a class="list-group-item list-group-item-action active text-white">
-                  <div class="media">
-                    <div class="media-body ml-4">
-                      <div class="d-flex align-items-center justify-content-between mb-1">
-                        <h6 class="mb-0">Channel 2</h6><small class="small font-weight-bold">25 Set</small>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </ul>
+          <div class="list-group" id="channels">
           </div>
         </div>
         <div class="col-9">
-          <!-- Chat -->
-          <div class="container">
-            <div class="row">
-              <div class="col">
-                <form id="message-form"></form>
-              </div>
-            </div>
-            <div class="row fixed-bottom">
-              <div class="col">
-                <div class="input-group mb-3">
-                  <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
-                  <button class="btn btn-outline-secondary" type="button" id="message-btn" type="submit">Send</button>
-                </div>
-              </div>
+          <div class="row">
+            <div class="h-100 fixed-bottom"></div>
+            <div class="input-group mb-3 fixed-bottom">
+              <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
+              <button class="btn btn-outline-secondary" type="button" id="message-btn" type="submit">Send</button>
             </div>
           </div>
         </div>
@@ -130,24 +86,25 @@
         </div>
         <div class="modal-body">
           <div class="form-floating">
-            <input type="email" class="form-control" id="name_channel" placeholder="Channel name">
+            <input type="email" class="form-control" id="channel_name" placeholder="Channel name">
             <label for="email"><Nav>Name</Nav></label>
           </div>
           <br>
+          <ul class="list-group list-group-horizontal" style="display: none;" id="names_of_channel">
+          </ul>
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
               Members
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="members">
             </ul>
-            <button type="button" class="btn btn-outline-primary">Add</button>
           </div>
 
           
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Create</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="createChannel()">Create</button>
         </div>
       </div>
     </div>
