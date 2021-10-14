@@ -57,13 +57,9 @@ var firebaseConfig = {
 }
 
 /* chat.html */
-// submit form
-  // listen for submit event on the form and call the postChat function
-  //document.getElementById("message-form").addEventListener("submit", sendMessage);
   
   // send message to db
-  function sendMessage(e) {
-    e.preventDefault();
+  function sendMessage() {
   
     // get values to be submitted
     const timestamp = Date.now();
@@ -78,6 +74,7 @@ var firebaseConfig = {
       .getElementById("messages")
       .scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
   
+    var uid = firebase.auth().currentUser.uid;
     // create db collection and send in the data
     db.ref("messages/" + timestamp).set({
       uid,
@@ -93,11 +90,13 @@ var firebaseConfig = {
   fetchChat.on("child_added", function (snapshot) {
     const user = firebase.auth().currentUser;
     const messages = snapshot.val();
-    const message = `<li class=${
-      username === messages.uid ? "sent" : "receive"
+    /*const message = `<li class=${
+      firebase.auth().currentUser.uid === messages.uid ? "sent" : "receive"
     }><span>${messages.username}: </span>${messages.message}</li>`;
     // append the message on the page
-    document.getElementById("messages").innerHTML += message;
+    document.getElementById("messages").innerHTML += message;*/
+    console.log(messages.username + " " + messages.message);
+    document.getElementById("messages").appendChild(getChatBox(messages.username, messages.message));
   });
 
 function viewAllUsers(){
@@ -169,4 +168,22 @@ function checkEmail(){
     alert("Inserire un indirizzo email valido");
     document.getElementById('email').value = "";
   }
+}
+
+/* create message element */
+/*
+<div class="w-50 alert alert-dark m-2 p-2">
+  <strong>Nickname</strong><br>
+  Hyyyyy!!!! How are you
+</div>*/
+
+function getChatBox(nickname, message){
+  var strong = document.createElement("strong");
+  strong.textContent = nickname;
+  var div = document.createElement("div");
+  div.setAttribute("class", "w-50 alert alert-dark m-2 p-2");
+  div.appendChild(strong).appendChild(document.createElement("br"));
+  div.append(message);
+  console.log(div);
+  return div;
 }

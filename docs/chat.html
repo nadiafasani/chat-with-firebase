@@ -66,10 +66,13 @@
         </div>
         <div class="col-9">
           <div class="row">
-            <div class="h-100 fixed-bottom"></div>
+            <div class="h-100" id="messages">
+            </div>
             <div class="input-group mb-3 fixed-bottom">
-              <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
-              <button class="btn btn-outline-secondary" type="button" id="message-btn" type="submit">Send</button>
+              <form id="message-form">
+                <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
+                <button class="btn btn-outline-secondary" type="button" id="message-btn" onclick="sendMessage()">Send</button>
+            </form>
             </div>
           </div>
         </div>
