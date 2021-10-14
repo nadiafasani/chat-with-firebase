@@ -16,7 +16,7 @@ var firebaseConfig = {
   
   // submit form
   // listen for submit event on the form and call the postChat function
-  document.getElementById("message-form").addEventListener("submit", sendMessage);
+  //document.getElementById("message-form").addEventListener("submit", sendMessage);
   
   // send message to db
   function sendMessage(e) {
@@ -55,3 +55,25 @@ var firebaseConfig = {
     // append the message on the page
     document.getElementById("messages").innerHTML += message;
   });
+  
+
+
+  function listAllUsers() {
+   
+    // List batch of users, 1000 at a time.
+    admin.auth().listUsers(1000)
+     .then(function(listUsersResult) {
+      listUsersResult.users.forEach(function(userRecord) {
+       console.log(userRecord);
+       console.log("\n-----");
+      });
+      console.log("Toplam: " + say);
+      if (listUsersResult.pageToken) {
+       // List next batch of users.
+       //listAllUsers(listUsersResult.pageToken)
+      }
+     })
+     .catch(function(error) {
+      console.log("Error listing users:", error);
+     });
+   }

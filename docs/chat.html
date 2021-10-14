@@ -16,6 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+    <script src="https://unpkg.com/boxicons@2.0.9/dist/boxicons.js"></script>
     <script src="index.js"></script>
 
   </head>
@@ -34,18 +35,24 @@
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    <a class="nav-link active" aria-current="page" href="index.html">
+                      <box-icon name='home' type='solid' color='#ffffff' ></box-icon>
+                    </a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <box-icon name='plus' color="#fff"></box-icon>
+                    </a>
+                    <ul class="dropdown-menu float-end" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" href="#"  data-bs-toggle="modal" data-bs-target="#modalNewChannel" onclick="viewAllUsers()">new channel</a></li>
+                      <li><a class="dropdown-item" href="#"  data-bs-toggle="modal" data-bs-target="#modalNewChannel" onclick="">new chat</a></li>
+                    </ul>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="account.html"><box-icon name='user' color='#fff' ></box-icon></a>
                   </li>
                 </ul>
-                <form class="d-flex">
-                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                      <a class="nav-link active" aria-current="page" href="account.html">Account</a>
-                      <a class="nav-link active" aria-current="page" data-bs-toggle="modal" data-bs-target="#modalNewChannel">new channel</a>
-                      <a class="nav-link active" aria-current="page" href="account.html">Account</a>
-                    </li>
-                  </ul>
-                </form>
+                </ul>
               </div>
             </div>
           </nav>
@@ -118,15 +125,29 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Create new channel</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          ...
+          <div class="form-floating">
+            <input type="email" class="form-control" id="name_channel" placeholder="Channel name">
+            <label for="email"><Nav>Name</Nav></label>
+          </div>
+          <br>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+              Members
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="members">
+            </ul>
+            <button type="button" class="btn btn-outline-primary">Add</button>
+          </div>
+
+          
+
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Create</button>
         </div>
       </div>
     </div>

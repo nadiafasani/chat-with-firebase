@@ -16,6 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+    <script src="https://unpkg.com/boxicons@2.0.9/dist/boxicons.js"></script>
     <script src="index.js"></script>
 
   </head>
@@ -34,13 +35,15 @@
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    <a class="nav-link active" aria-current="page" href="index.html">
+                      <box-icon name='home' type='solid' color='#ffffff' ></box-icon>
+                    </a>
                   </li>
                 </ul>
                 <form class="d-flex">
                   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                      <a class="nav-link active" aria-current="page" href="account.html">Account</a>
+                      <a class="nav-link active" aria-current="page" href="account.html"><box-icon name='user' color='#fff' ></box-icon></a>
                     </li>
                   </ul>
                 </form>
@@ -50,64 +53,8 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-3 h-100">
-          <!-- Channels -->
-          <div class="card" style="width: 18rem;">
-            <ul class="list-group list-group-flush">
-              <div class="list-group-item border-0">
-                <a class="list-group-item list-group-item-action active text-white">
-                  <div class="media">
-                    <div class="media-body ml-4">
-                      <div class="d-flex align-items-center justify-content-between mb-1">
-                        <h6 class="mb-0">Channel</h6><small class="small font-weight-bold">25 Set</small>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              <div class="list-group-item border-0" onclick="console.log('click');">
-                <a class="list-group-item list-group-item-action active text-white">
-                  <div class="media">
-                    <div class="media-body ml-4">
-                      <div class="d-flex align-items-center justify-content-between mb-1">
-                        <h6 class="mb-0">Channel 1 </h6><small class="small font-weight-bold">5 Oct</small>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              <div class="list-group-item border-0">
-                <a class="list-group-item list-group-item-action active text-white">
-                  <div class="media">
-                    <div class="media-body ml-4">
-                      <div class="d-flex align-items-center justify-content-between mb-1">
-                        <h6 class="mb-0">Channel 2</h6><small class="small font-weight-bold">25 Set</small>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </ul>
-          </div>
-        </div>
-        <div class="col-9">
-          <!-- Chat -->
-          <div class="container">
-            <div class="row">
-              <div class="col">
-                <form id="message-form"></form>
-              </div>
-            </div>
-            <div class="row fixed-bottom">
-              <div class="col">
-                <div class="input-group mb-3">
-                  <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
-                  <button class="btn btn-outline-secondary" type="button" id="message-btn" type="submit">Send</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="col-4 h-100 bg-black">
+
       </div>
     </div>
 

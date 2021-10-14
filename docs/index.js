@@ -19,21 +19,8 @@ var firebaseConfig = {
   const auth = firebase.auth();
   const timestamp = Date.now();
   var user;
-  
-  // display the messages
-  // reference the collection created earlier
-  const fetchChat = db.ref("messages/");
-  
-  // check for new messages using the onChildAdded event listener
-  fetchChat.on("child_added", function (snapshot) {
-    const messages = snapshot.val();
-    const message = `<li class=${
-      username === messages.username ? "sent" : "receive"
-    }><span>${messages.username}: </span>${messages.message}</li>`;
-    // append the message on the page
-    document.getElementById("messages").innerHTML += message;
-  });
 
+  /* index.html */
   function registerNewUser(){
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
@@ -43,15 +30,19 @@ var firebaseConfig = {
     // creare account
     auth.createUserWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      // Signed in 
       user = userCredential.user;
-      // ...
+      var uid = user.uid;
+      db.ref("users/" + user.uid).set({
+        uid,
+        email,
+        nickname,
+        isAdmin: false,
+      });
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(error.message);
-      // ..
     });
   }
 
@@ -71,6 +62,88 @@ var firebaseConfig = {
         document.getElementById("login_error").innerHTML = error.message;
     });
 }
+
+/* chat.html */
+/*
+// submit form
+  // listen for submit event on the form and call the postChat function
+  //document.getElementById("message-form").addEventListener("submit", sendMessage);
+  
+  // send message to db
+  function sendMessage(e) {
+    e.preventDefault();
+  
+    // get values to be submitted
+    const timestamp = Date.now();
+    const messageInput = document.getElementById("message-input");
+    const message = messageInput.value;
+  
+    // clear the input box
+    messageInput.value = "";
+  
+    //auto scroll to bottom
+    document
+      .getElementById("messages")
+      .scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+  
+    // create db collection and send in the data
+    db.ref("messages/" + timestamp).set({
+      username,
+      message,
+    });
+  }
+  
+  // display the messages
+  // reference the collection created earlier
+  const fetchChat = db.ref("messages/");
+  
+  // check for new messages using the onChildAdded event listener
+  fetchChat.on("child_added", function (snapshot) {
+    const messages = snapshot.val();
+    const message = `<li class=${
+      username === messages.username ? "sent" : "receive"
+    }><span>${messages.username}: </span>${messages.message}</li>`;
+    // append the message on the page
+    document.getElementById("messages").innerHTML += message;
+  });*/
+
+
+  /*function listAllUsers() {
+   
+    // List batch of users, 1000 at a time.
+    admin.auth().listUsers(1000)
+     .then(function(listUsersResult) {
+      listUsersResult.users.forEach(function(userRecord) {
+       console.log(userRecord);
+       console.log("\n-----");
+      });
+      console.log("Toplam: " + say);
+      if (listUsersResult.pageToken) {
+       // List next batch of users.
+       //listAllUsers(listUsersResult.pageToken)
+      }
+     })
+     .catch(function(error) {
+      console.log("Error listing users:", error);
+     });
+   }
+
+   listAllUsers();*/
+
+  function viewAllUsers(){
+    console.log("esisto");
+    var users = new Array();
+    var dropdown = document.getElementById('members');
+    console.log(dropdown);
+    var starCountRef = firebase.database().ref('users/');
+    starCountRef.on('value', (snapshot) => {
+      users = snapshot.val();
+      for (var i = 0; i < users.length; i++) {
+        console.log("hexyy");
+        document.getElementById('members').innerHTML += '<li><a class="dropdown-item" id="' + users[i].uid+ '">' +  nickname + '</a></li>';
+      }
+    });
+  }
 
 /* Helpers */
 function checkEmail(){
