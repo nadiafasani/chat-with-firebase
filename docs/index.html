@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,58 +20,60 @@
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <script src="/js/bootstrap.bundle.min.js"></script>
 
-  </head>
-  <body>
+</head>
+
+<body>
 
     <div class="container-fluid">
-      <div class="row">
-        <div class="col">
-          <!-- Navbar -->
-          <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="#">Chat with</a><a class="navbar-brand" href="https://firebase.google.com/?gclid=CjwKCAjwtfqKBhBoEiwAZuesiHhYETT7zK6gov8INBSrcyjss0CRvPkZy9w89_OGR7gSCOXicQLxnhoCYfsQAvD_BwE&gclsrc=aw.ds">Firebase</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="row">
+            <div class="col">
+                <!-- Navbar -->
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">Chat with</a><a class="navbar-brand" href="https://firebase.google.com/?gclid=CjwKCAjwtfqKBhBoEiwAZuesiHhYETT7zK6gov8INBSrcyjss0CRvPkZy9w89_OGR7gSCOXicQLxnhoCYfsQAvD_BwE&gclsrc=aw.ds">Firebase</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
-              <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="index.html">
-                      <box-icon name='home' type='solid' color='#ffffff' ></box-icon>
-                    </a>
-                  </li>
-                </ul>
-              </div>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="index.html">
+                                        <box-icon name='home' type='solid' color='#ffffff'></box-icon>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
             </div>
-          </nav>
         </div>
-      </div>
-      <div class="row">
-        <div class="col"></div>
+        <div class="row">
+            <div class="col"></div>
 
-        <div class="col text-center">
-            <h1 class="h3 mb-3 fw-normal">Sign in</h1>
+            <div class="col text-center">
+                <h1 class="h3 mb-3 fw-normal">Sign in</h1>
 
-            <div class="form-floating">
-              <input type="email" class="form-control" id="nickname" placeholder="nickname">
-              <label for="email"><Nav>Nickname</Nav></label>
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="nickname" placeholder="nickname">
+                    <label for="email"><Nav>Nickname</Nav></label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="email" placeholder="name@example.com">
+                    <label for="email">Email</label>
+                </div>
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="password" placeholder="Password">
+                    <label for="password">Password</label>
+                </div>
+                <label id="login_error" style="color:#f00"></label><br>
+                <button class="btn btn-outline-primary" onclick="loginUser()">Sign in</button><br>
+                <label for="password">or</label><br>
+                <button class="btn btn-lg btn-primary" onclick="registerNewUser()">Register</button>
             </div>
-        
-            <div class="form-floating">
-              <input type="email" class="form-control" id="email" placeholder="name@example.com">
-              <label for="email">Email</label>
-            </div>
-            <div class="form-floating">
-              <input type="password" class="form-control" id="password" placeholder="Password">
-              <label for="password">Password</label>
-            </div>
-            <button class="btn btn-outline-primary" onclick="loginUser()">Sign in</button><br>
-            <label for="password">or</label><br>
-            <button class="btn btn-lg btn-primary" onclick="registerNewUser()">Register</button>
+
+            <div class="col"></div>
         </div>
-        
-        <div class="col"></div>
-      </div>
     </div>
 
     <!--
@@ -85,5 +88,6 @@
     // import {} from "https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-messaging.js";
     // import {} from "https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-database.js";
     -->
-  </body>
+</body>
+
 </html>
