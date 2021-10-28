@@ -1,3 +1,6 @@
+//bootstrap colors
+
+
 // Configurazioni di Firebase
 var firebaseConfig = {
     apiKey: "AIzaSyAjJ0bNKGMPoIeU6jbq8SNlkAiIbEt7TL8",
@@ -37,6 +40,7 @@ function registerNewUser() {
                 uid,
                 email,
                 nickname,
+                ban: false,
             });
         })
         .catch((error) => {
@@ -64,19 +68,27 @@ function sendMessage() {
     // get values to be submitted
     const timestamp = Date.now();
     const messageInput = document.getElementById("message-input");
+
     const message = messageInput.value;
 
-    // clear the input box
+    if (message.trim()) {
+        var uid = firebase.auth().currentUser.uid;
+        // create db collection and send in the data
+        db.ref("messages/" + timestamp).set({
+            uid,
+            channel: currentChannel,
+            message,
+        });
+    }
     messageInput.value = "";
-
-    var uid = firebase.auth().currentUser.uid;
-    // create db collection and send in the data
-    db.ref("messages/" + timestamp).set({
-        uid,
-        currentChannel,
-        message,
-    });
 }
+console.log(document.getElementById("message-input"));
+document.getElementById("message-input").addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+        event.preventDefault();
+        document.getElementById("message-btn").click();
+    }
+});
 
 // display the messages
 // reference the collection created earlier
@@ -100,6 +112,7 @@ fetchChat.on("child_added", function(snapshot) {
 
 function viewAllUsers() {
     var dropdown = document.getElementById('members');
+    var dropdown2 = document.getElementById('members_for_ban');
 
     var users = new Array();
 
@@ -108,7 +121,8 @@ function viewAllUsers() {
             var childKey = childSnapshot.key;
             var childData = childSnapshot.val();
             if (childData.uid != firebase.auth().currentUser.uid) {
-                document.getElementById('members').innerHTML += '<li><a class="dropdown-item" id="' + childData.nickname + '" onclick="addToChannel(this.innerHTML)" >' + childData.nickname + '</a></li>';
+                dropdown.innerHTML += '<li><a class="dropdown-item" id="' + childData.nickname + '_for_ban" onclick="addToChannel(this.innerHTML)" >' + childData.nickname + '</a></li>';
+                dropdown2.innerHTML += '<li><a class="dropdown-item" id="' + childData.nickname + '_for_ban" onclick="addToBan(this.innerHTML)" >' + childData.nickname + '</a></li>';
             }
             users.push(childData);
         });
@@ -124,11 +138,6 @@ function addToChannel(nickname) {
 }
 
 function createChannel() {
-    var channel = document.getElementById('channel_name').value;
-    if (channel == "") {
-        document.getElementById('new_channel_error').innerHTML = "Inserire il nome del canale"
-    }
-
     var channel = document.getElementById('channel_name').value;
     if (channel == "") {
         document.getElementById('new_channel_error').innerHTML = "Inserire il nome del canale";
@@ -160,21 +169,37 @@ function createChannel() {
                 }
             }
         });
+    loadChannels();
+}
 
-
+function channelExists(channel) {
+    db.ref("channels").once("value")
+        .then(function(snapshot) {
+            if (snapshot.child(channel).exists()) {
+                document.getElementById('new_channel_error').innerHTML = "Il canale esiste già. Cambia il nome";
+            } else {
+                document.getElementById('new_channel_error').innerHTML = "";
+            }
+        });
 }
 
 function loadChannels() {
+    document.getElementById('channels').innerHTML = "";
     db.ref('channels/').once('value', function(snapshot) {
         snapshot.forEach(function(childSnapshot) {
             const user = firebase.auth().currentUser;
             var channel = childSnapshot.key;
             if (snapshot.child(channel).child(user.uid).exists()) {
                 currentChannel = channel;
-                document.getElementById('channels').innerHTML += '<a class="list-group-item list-group-item-action list-group-item-dark" onclick="changeChannel(this.id)" id="' + channel + '">' + channel + '<button type="button" class="btn-close position-absolute end-0" onclick="deleteChannel()"></button></a>';
+                document.getElementById('channels').innerHTML += '<a class="list-group-item list-group-item-action list-group-item-dark" onclick="changeChannel(this.id)" id="' + channel + '">' +
+                    channel +
+                    "<box-icon type='solid' name='edit' class='float-end' color='#6a6a6a' class='edit_icon'></box-icon>" +
+                    '<button type="button" class="btn-close float-end" onclick="deleteChannel(this.id)" id="' + channel + '"></button>' +
+                    '</a>';
             }
         });
     });
+    reloadMessages();
     showNickname();
 }
 
@@ -192,7 +217,7 @@ function getChatBox(nickname, message) {
     var strong = document.createElement("strong");
     strong.textContent = nickname;
     var div = document.createElement("div");
-    div.setAttribute("class", "w-50 alert alert-dark m-2 p-2");
+    div.setAttribute("class", "w-50 alert alert-dark bg-info m-2 p-2");
     div.appendChild(strong).appendChild(document.createElement("br"));
     div.append(message);
     return div;
@@ -207,13 +232,14 @@ function showNickname() {
     db.ref("users/").orderByChild("name").on("child_added", function(data) {
         const user = firebase.auth().currentUser;
         if (data.val().uid == user.uid) {
-            document.getElementById('account').innerHTML += data.val().nickname;
+            document.getElementById('account').innerHTML = "<box-icon name='user'></box-icon>" + data.val().nickname;
         }
     });
 }
 
 function reloadMessages() {
     const divMessages = document.getElementById("messages");
+    divMessages.innerHTML = "";
     while (divMessages.lastElementChild) {
         divMessages.removeChild(divMessages.lastElementChild);
     }
@@ -223,14 +249,36 @@ function reloadMessages() {
         const user = firebase.auth().currentUser;
         const messages = snapshot.val();
         db.ref("users/").orderByChild("name").on("child_added", function(data) {
-            if (data.val().uid == messages.uid && messages.currentChannel == currentChannel) {
-                console.log("entra");
+            if (data.val().uid == messages.uid && messages.channel == currentChannel) {
                 document.getElementById("messages").appendChild(getChatBox(data.val().nickname, messages.message));
             }
         });
     });
 }
 
-function deleteChannel() {
+function deleteChannel(channel) {
+    db.ref('channels/' + channel).remove();
+    loadChannels();
 
+    db.ref("messages/").once("value", function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+            if (childSnapshot.val().channel == channel) {
+                db.ref("messages/" + childSnapshot.key).remove();
+            }
+        });
+    });
+}
+
+function modifyChannel(channel) {
+
+}
+
+function addToBan(user) {
+    if (document.getElementById('bans').style.display == 'none') {
+        document.getElementById('bans').style.display = 'block';
+    }
+
+    if (document.getElementById('bans').childNodes.length < 2) {
+        document.getElementById('bans').innerHTML += '<li class="list-group-item list-group-item-action list-group-item-dark" onclick="this.remove()" id="' + user + '">' + user + '</li>';
+    }
 }
