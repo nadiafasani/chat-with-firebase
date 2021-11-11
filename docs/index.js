@@ -1,6 +1,3 @@
-//bootstrap colors
-
-
 // Configurazioni di Firebase
 var firebaseConfig = {
     apiKey: "AIzaSyAjJ0bNKGMPoIeU6jbq8SNlkAiIbEt7TL8",
@@ -54,10 +51,31 @@ function loginUser() {
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
 
-    auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            window.open("chat.html", "_self");
+    db.ref('bans/').once('value', function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+            var date = new Date(parseInt(childSnapshot.key));
+            var now = new Date().getTime();
+
+            console.log(date.getTime() + " - " + now);
+            var childData = childSnapshot.val();
+
+            db.ref('users/').once('value', function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    var emailUser = childSnapshot.val().email;
+                    console.log(email + " - " + emailUser);
+                    if (email == emailUser && date > now) {
+                        document.getElementById('login_error').innerHTML = "Sei stato bannato fino a " + date.toLocaleString();
+                    } else {
+                        auth.signInWithEmailAndPassword(email, password)
+                            .then((userCredential) => {
+                                console.log("entra");
+                                window.open("chat.html", "_self");
+                            });
+                    }
+                });
+            });
         });
+    });
 }
 
 /* chat.html */
@@ -82,13 +100,13 @@ function sendMessage() {
     }
     messageInput.value = "";
 }
-console.log(document.getElementById("message-input"));
+/*console.log(document.getElementById("message-input"));
 document.getElementById("message-input").addEventListener("keyup", function(event) {
     if (event.keyCode === 13) {
         event.preventDefault();
         document.getElementById("message-btn").click();
     }
-});
+});*/
 
 // display the messages
 // reference the collection created earlier
@@ -116,7 +134,7 @@ function viewAllUsers() {
 
     var users = new Array();
 
-    firebase.database().ref('users/').once('value', function(snapshot) {
+    db.ref('users/').once('value', function(snapshot) {
         snapshot.forEach(function(childSnapshot) {
             var childKey = childSnapshot.key;
             var childData = childSnapshot.val();
@@ -213,11 +231,12 @@ function checkEmail() {
 }
 
 /* create message element */
-function getChatBox(nickname, message) {
+function getChatBox(nickname, message, floatRight) {
     var strong = document.createElement("strong");
     strong.textContent = nickname;
     var div = document.createElement("div");
-    div.setAttribute("class", "w-50 alert alert-dark bg-info m-2 p-2");
+    div.setAttribute("class", (floatRight ? "float-right" : "float-left") + " w-50 m-2 p-2 rounded");
+    div.setAttribute("style", "background-color: #D4B0A5")
     div.appendChild(strong).appendChild(document.createElement("br"));
     div.append(message);
     return div;
@@ -250,7 +269,7 @@ function reloadMessages() {
         const messages = snapshot.val();
         db.ref("users/").orderByChild("name").on("child_added", function(data) {
             if (data.val().uid == messages.uid && messages.channel == currentChannel) {
-                document.getElementById("messages").appendChild(getChatBox(data.val().nickname, messages.message));
+                document.getElementById("messages").appendChild(getChatBox(data.val().nickname, messages.message, user.uid == messages.uid));
             }
         });
     });
@@ -281,4 +300,41 @@ function addToBan(user) {
     if (document.getElementById('bans').childNodes.length < 2) {
         document.getElementById('bans').innerHTML += '<li class="list-group-item list-group-item-action list-group-item-dark" onclick="this.remove()" id="' + user + '">' + user + '</li>';
     }
+}
+
+function banUser() {
+    var reason = document.getElementById('reason').value;
+    var hours = document.getElementById('hours').value;
+    if (hours <= 0) {
+        hours = 1;
+    }
+
+    if (reason == "") {
+        document.getElementById('ban_error').innerHTML = "Inserire il motivo del ban";
+        return false;
+    }
+
+    var now = new Date();
+    var banTime = new Date(now.getTime() + hours * 3.6e+6);
+    console.log(now + " - " + banTime.toLocaleString());
+
+    db.ref("bans").once("value")
+        .then(function(snapshot) {
+            var bannedNickname = document.getElementById('bans').childNodes[1].innerHTML;
+
+            db.ref('users').orderByChild('nickname').equalTo(bannedNickname).once('value', function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    var nickname = childSnapshot.val().nickname;
+                    var userUID = firebase.auth().currentUser.uid;
+                    var uid = childSnapshot.val().uid;
+                    console.log(bannedNickname + " - " + nickname)
+                    if (bannedNickname == nickname) {
+                        db.ref("bans/" + banTime.getTime()).set({
+                            banner: userUID,
+                            banned: uid,
+                        });
+                    }
+                });
+            });
+        });
 }

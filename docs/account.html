@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,7 +11,7 @@
     <meta name="author" content="Nadia Fasani">
 
     <!-- scripts -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.css" rel="stylesheet">
     <script src="/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
@@ -19,48 +20,51 @@
     <script src="https://unpkg.com/boxicons@2.0.9/dist/boxicons.js"></script>
     <script src="index.js"></script>
 
-  </head>
-  <body>
+</head>
+
+<body>
 
     <div class="container-fluid">
-      <div class="row">
-        <div class="col">
-          <!-- Navbar -->
-          <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="index.html">Chat with Firebase</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="row">
+            <div class="col">
+                <!-- Navbar -->
+                <nav class="navbar navbar-expand-lg bg-secondary text-black">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="index.html">Chat with Firebase</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
-              <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="index.html">
-                      <box-icon name='home' type='solid' color='#ffffff' ></box-icon>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="chat.html">
-                      <box-icon name='message-rounded' color='#ffffff' ></box-icon>
-                    </a>
-                  </li>
-                </ul>
-                <form class="d-flex">
-                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                      <a class="nav-link active" aria-current="page" href="account.html"><box-icon name='user' color='#fff' ></box-icon></a>
-                    </li>
-                  </ul>
-                </form>
-              </div>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="index.html">
+                                        <box-icon name='home' type='solid'></box-icon>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="chat.html">
+                                        <box-icon name='message-rounded'></box-icon>
+                                    </a>
+                                </li>
+                            </ul>
+                            <form class="d-flex">
+                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="page" href="account.html">
+                                            <box-icon name='user'></box-icon>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </form>
+                        </div>
+                    </div>
+                </nav>
             </div>
-          </nav>
         </div>
-      </div>
-      <div class="row">
-        <button type="button" class="btn btn-outline-dark w-25">Change password</button>
-          
-      </div>
+        <div class="row">
+            <button type="button" class="btn btn-outline-dark w-25">Change password</button>
+
+        </div>
     </div>
 
     <!--
@@ -75,5 +79,6 @@
     // import {} from "https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-messaging.js";
     // import {} from "https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-database.js";
     -->
-  </body>
+</body>
+
 </html>

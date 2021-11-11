@@ -20,8 +20,6 @@
     <script src="https://unpkg.com/boxicons@2.0.9/dist/boxicons.js"></script>
     <script src="index.js"></script>
 
-    <link href="chat.css" rel="stylesheet">
-
 </head>
 
 <body onload="loadChannels()">
@@ -71,7 +69,7 @@
             </div>
             <div class="col">
                 <div class="row">
-                    <div class="h-100 d-flex align-items-end flex-column" id="messages">
+                    <div class="d-flex flex-column" id="messages" style="overflow: auto; height: 800px;">
                     </div>
                     <div class="input-group mb-3 fixed-bottom">
                         <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
@@ -92,7 +90,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-floating">
-                        <input type="email" class="form-control" id="channel_name" placeholder="Channel name" oninput="channelExists(this.value)">
+                        <input type="text" class="form-control" id="channel_name" placeholder="Channel name" oninput="channelExists(this.value)">
                         <label for="email"><Nav>Name</Nav></label>
                     </div>
                     <br>
@@ -124,20 +122,25 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-floating">
-                        <input type="email" class="form-control" id="channel_name" placeholder="Channel name">
-                        <label for="email"><Nav>Reason</Nav></label>
+                        <input type="text" class="form-control" id="reason" placeholder="Reason">
+                        <label for="reason"><Nav>Reason</Nav></label>
+                    </div>
+                    <br>
+                    <div class="form-floating">
+                        <input type="number" class="form-control" id="hours" placeholder="24" value="1">
+                        <label for="hours"><Nav>Hours</Nav></label>
                     </div>
                     <br>
                     <ul class="list-group list-group-horizontal" style="display: none;" id="bans">
                     </ul>
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-              Members
+              Member
             </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="members_for_ban">
                         </ul>
                     </div>
-                    <label id="new_channel_error" style="color:#f00"></label><br>
+                    <label id="ban_error" style="color:#f00"></label><br>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="banUser()">Ban</button>
