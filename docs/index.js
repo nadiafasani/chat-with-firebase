@@ -100,13 +100,6 @@ function sendMessage() {
     }
     messageInput.value = "";
 }
-/*console.log(document.getElementById("message-input"));
-document.getElementById("message-input").addEventListener("keyup", function(event) {
-    if (event.keyCode === 13) {
-        event.preventDefault();
-        document.getElementById("message-btn").click();
-    }
-});*/
 
 // display the messages
 // reference the collection created earlier
@@ -116,11 +109,6 @@ const fetchChat = db.ref("messages/");
 fetchChat.on("child_added", function(snapshot) {
     const user = firebase.auth().currentUser;
     const messages = snapshot.val();
-    /*const message = `<li class=${
-      firebase.auth().currentUser.uid === messages.uid ? "sent" : "receive"
-    }><span>${messages.username}: </span>${messages.message}</li>`;
-    // append the message on the page
-    document.getElementById("messages").innerHTML += message;*/
     db.ref("users/").orderByChild("name").on("child_added", function(data) {
         if (data.val().uid == messages.uid && messages.currentChannel == currentChannel) {
             document.getElementById("messages").appendChild(getChatBox(data.val().nickname, messages.message));
