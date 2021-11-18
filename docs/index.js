@@ -18,8 +18,9 @@ const db = firebase.database();
 
 // Inizializzare variabili
 const auth = firebase.auth();
-const timestamp = Date.now();
+var timestamp = Date.now();
 const user = firebase.auth().currentUser;
+var banned = false;
 var currentChannel;
 
 /* index.html */
@@ -38,6 +39,7 @@ function registerNewUser() {
                 email,
                 nickname,
                 ban: false,
+                admin: false,
             });
         })
         .catch((error) => {
@@ -48,6 +50,7 @@ function registerNewUser() {
 }
 
 function loginUser() {
+    banned = false;
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
 
@@ -56,23 +59,23 @@ function loginUser() {
             var date = new Date(parseInt(childSnapshot.key));
             var now = new Date().getTime();
 
-            console.log(date.getTime() + " - " + now);
             var childData = childSnapshot.val();
 
             db.ref('users/').once('value', function(snapshot) {
+
                 snapshot.forEach(function(childSnapshot) {
                     var emailUser = childSnapshot.val().email;
-                    console.log(email + " - " + emailUser);
                     if (email == emailUser && date > now) {
                         document.getElementById('login_error').innerHTML = "Sei stato bannato fino a " + date.toLocaleString();
-                    } else {
-                        auth.signInWithEmailAndPassword(email, password)
-                            .then((userCredential) => {
-                                console.log("entra");
-                                window.open("chat.html", "_self");
-                            });
+                        banned = true;
                     }
                 });
+                if (!banned) {
+                    auth.signInWithEmailAndPassword(email, password)
+                        .then((userCredential) => {
+                            window.open("chat.html", "_self");
+                        });
+                }
             });
         });
     });
@@ -81,11 +84,11 @@ function loginUser() {
 /* chat.html */
 
 // send message to db
-function sendMessage() {
+function sendMessage(broadcast) {
 
     // get values to be submitted
     const timestamp = Date.now();
-    const messageInput = document.getElementById("message-input");
+    const messageInput = document.getElementById(broadcast ? "broadcast_message" : "message-input");
 
     const message = messageInput.value;
 
@@ -96,22 +99,20 @@ function sendMessage() {
             uid,
             channel: currentChannel,
             message,
+            broadcast,
         });
     }
     messageInput.value = "";
 }
 
-// display the messages
-// reference the collection created earlier
-const fetchChat = db.ref("messages/");
-
 // check for new messages using the onChildAdded event listener
-fetchChat.on("child_added", function(snapshot) {
+db.ref("messages/").on("child_added", function(snapshot) {
     const user = firebase.auth().currentUser;
     const messages = snapshot.val();
+    timestamp = Date.now();
     db.ref("users/").orderByChild("name").on("child_added", function(data) {
-        if (data.val().uid == messages.uid && messages.currentChannel == currentChannel) {
-            document.getElementById("messages").appendChild(getChatBox(data.val().nickname, messages.message));
+        if ((data.val().uid == messages.uid && messages.currentChannel == currentChannel) || (messages.broadcast && data.val().uid == messages.uid)) {
+            document.getElementById("messages").appendChild(getChatBox(data.val().nickname, messages.message, user.uid == messages.uid, messages.broadcast));
         }
     });
 });
@@ -178,13 +179,13 @@ function createChannel() {
     loadChannels();
 }
 
-function channelExists(channel) {
+function channelExists(channel, error_id) {
     db.ref("channels").once("value")
         .then(function(snapshot) {
             if (snapshot.child(channel).exists()) {
-                document.getElementById('new_channel_error').innerHTML = "Il canale esiste già. Cambia il nome";
+                document.getElementById(error_id).innerHTML = "Il canale esiste già. Cambia il nome";
             } else {
-                document.getElementById('new_channel_error').innerHTML = "";
+                document.getElementById(error_id).innerHTML = "";
             }
         });
 }
@@ -199,7 +200,7 @@ function loadChannels() {
                 currentChannel = channel;
                 document.getElementById('channels').innerHTML += '<a class="list-group-item list-group-item-action list-group-item-dark" onclick="changeChannel(this.id)" id="' + channel + '">' +
                     channel +
-                    "<box-icon type='solid' name='edit' class='float-end' color='#6a6a6a' class='edit_icon'></box-icon>" +
+                    "<box-icon type='solid' name='edit' class='float-end edit_icon' id='modify_" + channel + "' color='#6a6a6a' data-bs-toggle='modal' data-bs-target='#modalModifyChannel'  onclick='modifyChannel(this.id)'></box-icon>" +
                     '<button type="button" class="btn-close float-end" onclick="deleteChannel(this.id)" id="' + channel + '"></button>' +
                     '</a>';
             }
@@ -219,15 +220,17 @@ function checkEmail() {
 }
 
 /* create message element */
-function getChatBox(nickname, message, floatRight) {
+function getChatBox(nickname, message, floatRight, broadcast) {
     var strong = document.createElement("strong");
-    strong.textContent = nickname;
+    strong.textContent = nickname + (broadcast ? " in Broadcast" : "");
+    var divRow = document.createElement("div");
+    divRow.setAttribute("class", "row");
     var div = document.createElement("div");
-    div.setAttribute("class", (floatRight ? "float-right" : "float-left") + " w-50 m-2 p-2 rounded");
-    div.setAttribute("style", "background-color: #D4B0A5")
-    div.appendChild(strong).appendChild(document.createElement("br"));
+    div.setAttribute("class", (floatRight ? "float-start" : "float-end") + " w-50 m-2 p-2 rounded");
+    div.setAttribute("style", "background-color: #D4B0A5");
+    divRow.appendChild(div).appendChild(strong).appendChild(document.createElement("br"));
     div.append(message);
-    return div;
+    return divRow;
 }
 
 function changeChannel(channel) {
@@ -255,9 +258,10 @@ function reloadMessages() {
     db.ref("messages/").on("child_added", function(snapshot) {
         const user = firebase.auth().currentUser;
         const messages = snapshot.val();
+        timestamp = Date.now();
         db.ref("users/").orderByChild("name").on("child_added", function(data) {
-            if (data.val().uid == messages.uid && messages.channel == currentChannel) {
-                document.getElementById("messages").appendChild(getChatBox(data.val().nickname, messages.message, user.uid == messages.uid));
+            if ((data.val().uid == messages.uid && messages.channel == currentChannel) || (messages.broadcast && data.val().uid == messages.uid)) {
+                document.getElementById("messages").appendChild(getChatBox(data.val().nickname, messages.message, user.uid == messages.uid, messages.broadcast));
             }
         });
     });
@@ -277,7 +281,11 @@ function deleteChannel(channel) {
 }
 
 function modifyChannel(channel) {
-
+    channel = channel.substring(7);
+    console.log(channel);
+    modalModifyChannel = document.getElementById('modalModifyChannel');
+    document.getElementById("modify_channel_name").innerHTML = channel;
+    modalModifyChannel.show;
 }
 
 function addToBan(user) {
@@ -304,7 +312,6 @@ function banUser() {
 
     var now = new Date();
     var banTime = new Date(now.getTime() + hours * 3.6e+6);
-    console.log(now + " - " + banTime.toLocaleString());
 
     db.ref("bans").once("value")
         .then(function(snapshot) {
@@ -315,7 +322,6 @@ function banUser() {
                     var nickname = childSnapshot.val().nickname;
                     var userUID = firebase.auth().currentUser.uid;
                     var uid = childSnapshot.val().uid;
-                    console.log(bannedNickname + " - " + nickname)
                     if (bannedNickname == nickname) {
                         db.ref("bans/" + banTime.getTime()).set({
                             banner: userUID,
@@ -325,4 +331,16 @@ function banUser() {
                 });
             });
         });
+}
+
+function loadAdminOption() {
+    db.ref('users/').once('value', function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+            var childKey = childSnapshot.key;
+            var childData = childSnapshot.val();
+            if (childData.admin) {
+                document.getElementById("admin").style.display = "block";
+            }
+        });
+    });
 }

@@ -22,7 +22,7 @@
 
 </head>
 
-<body onload="loadChannels()">
+<body onload="loadChannels(), loadAdminOption()">
 
     <div class="container-fluid">
         <div class="row">
@@ -48,6 +48,7 @@
                                     <ul class="dropdown-menu float-end" aria-labelledby="navbarDropdown">
                                         <li><a class="dropdown-item text-dark" href="#" data-bs-toggle="modal" data-bs-target="#modalNewChannel" onclick="viewAllUsers()">new channel</a></li>
                                         <li><a class="dropdown-item text-dark" href="#" data-bs-toggle="modal" data-bs-target="#modalBanUser" onclick="viewAllUsers()">ban user</a></li>
+                                        <li id="admin" style="display: none;"><a class="dropdown-item text-dark" href="#" data-bs-toggle="modal" data-bs-target="#modalBroadcast">broadcast message</a></li>
                                     </ul>
                                 </li>
                                 <li class="nav-item">
@@ -73,7 +74,7 @@
                     </div>
                     <div class="input-group mb-3 fixed-bottom">
                         <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
-                        <button class="btn btn-outline-secondary border-0" type="button" id="message-btn" onclick="sendMessage()"><box-icon name='send'></box-icon></button>
+                        <button class="btn btn-outline-secondary border-0" type="button" id="message-btn" onclick="sendMessage(false), reloadMessages()"><box-icon name='send'></box-icon></button>
                     </div>
                 </div>
             </div>
@@ -90,7 +91,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="channel_name" placeholder="Channel name" oninput="channelExists(this.value)">
+                        <input type="text" class="form-control" id="channel_name" placeholder="Channel name" oninput="channelExists(this.value, 'new_channel_error')">
                         <label for="email"><Nav>Name</Nav></label>
                     </div>
                     <br>
@@ -141,6 +142,57 @@
                         </ul>
                     </div>
                     <label id="ban_error" style="color:#f00"></label><br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="banUser()">Ban</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal broadcast message-->
+    <div class="modal fade" id="modalBroadcast" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Send a message in broadcast</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="broadcast_message">
+                        <button class="btn btn-outline-secondary border-0" type="button" id="message-btn" data-bs-dismiss="modal" onclick="sendMessage(true), reloadMessages()"><box-icon name='send'></box-icon></button>
+                    </div>
+                    <br>
+                    <label id="channel_error" style="color:#f00"></label><br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal modify channel-->
+    <div class="modal fade" id="modalModifyChannel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modify <span id="modify_channel_name" oninput="channelExists(this.value)">name</span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="modify_channel" placeholder="New Name">
+                        <label for="modify_channel"><Nav>New Name</Nav></label>
+                    </div>
+                    <br>
+                    <div class="form-floating">
+                        <input type="number" class="form-control" id="hours" placeholder="24" value="1">
+                        <label for="hours"><Nav>Hours</Nav></label>
+                    </div>
+                    <br>
+                    <ul class="list-group list-group-horizontal" style="display: none;" id="bans">
+                    </ul>
+                    <br>
+                    <label id="new_channel_error" style="color:#f00"></label><br>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="banUser()">Ban</button>
