@@ -12,7 +12,9 @@
 
     <!-- scripts -->
     <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/sidebars.css" rel="stylesheet">
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/sidebars.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
@@ -24,178 +26,192 @@
 
 <body onload="loadChannels(), loadAdminOption()">
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col">
-                <!-- Navbar -->
-                <nav class="navbar navbar-expand-lg bg-secondary text-black">
-                    <div class="container-fluid">
-                        <a class="navbar-brand text-dark" href="index.html">Chat with Firebase</a>
-                        <button class="navbar-toggler text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <box-icon name='menu'></box-icon>
-                        </button>
-                        <div class="collapse navbar-collapse text-dark" id="navbarSupportedContent">
-                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="index.html" text-dark>
-                                        <box-icon name='home' type='solid'></box-icon>
-                                    </a>
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <box-icon name='plus'></box-icon>
-                                    </a>
-                                    <ul class="dropdown-menu float-end" aria-labelledby="navbarDropdown">
-                                        <li><a class="dropdown-item text-dark" href="#" data-bs-toggle="modal" data-bs-target="#modalNewChannel" onclick="viewAllUsers()">new channel</a></li>
-                                        <li><a class="dropdown-item text-dark" href="#" data-bs-toggle="modal" data-bs-target="#modalBanUser" onclick="viewAllUsers()">ban user</a></li>
-                                        <li id="admin" style="display: none;"><a class="dropdown-item text-dark" href="#" data-bs-toggle="modal" data-bs-target="#modalBroadcast">broadcast message</a></li>
-                                    </ul>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link active text-dark" aria-current="page" href="account.html" id="account">
-                                        <box-icon name='user'></box-icon>
-                                    </a>
-                                </li>
-                            </ul>
-                            </ul>
+    <div id="mySidebar" class="sidebar bg-secondary">
+        <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom border-dark">
+            <span class="fs-5 fw-semibold text-dark">Chat</span>
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        </a>
+        <ul class="list-unstyled ps-0">
+            <a class="nav-link active text-dark" aria-current="page" href="index.html">
+                <box-icon name='home' type='solid'></box-icon>
+            </a>
+            <a class="nav-link active" aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#modalNewChannel" onclick="viewAllUsers()">
+                <box-icon name='plus'></box-icon>
+            </a>
+            <a class="nav-link active" aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#modalBanUser" onclick="viewAllUsers()">
+                <box-icon name='user-x'></box-icon>
+            </a>
+            <a class="nav-link active" aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#modalBroadcast" id="admin">
+                <box-icon name='broadcast'></box-icon>
+            </a>
+            <li class="mb-1">
+                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#channels-collapse" aria-expanded="true">
+              Channels
+            </button>
+                <div class="collapse show fs-3" id="channels-collapse">
+                    <ul class="list-unstyled" id="channels">
+                        <li>
+                            <a class="py-0 fs-6" style="color: #404040;" onclick="changeChannel(this.id)" id="channel">channel name
+                                <box-icon type='solid' name='edit' class='float-end edit_icon' id='modify_1' color='#6a6a6a' data-bs-toggle='modal' data-bs-target='#modalModifyChannel' onclick='modifyChannel(this.id)'>
+                                </box-icon>
+                                <button type="button" class="btn-close float-end" onclick="deleteChannel(this.id)" id="' + channel + '"></button>
+                            </a>
+                        </li>
+                        <li><a href="#" class="py-0 fs-5" style="color: #404040;">Overview</a></li>
+                        <li><a href="#" class="py-0" style="color: #404040;">Updates</a></li>
+                        <li><a href="#" class="py-0" style="color: #404040;">Reports</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="border-top border-dark my-3"></li>
+            <li class="mb-1">
+                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false" id="account">
+              Account
+            </button>
+                <div class="collapse" id="account-collapse">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        <li><a href="#" class="link-dark rounded">Profile</a></li>
+                        <li><a href="#" class="link-dark rounded">Settings</a></li>
+                        <li><a href="#" class="link-dark rounded">Sign out</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div id="main">
+        <button class="btn btn-light" onclick="openNav()">☰</button>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="d-flex flex-column" id="messages" style="overflow: auto; height: 800px;">
+                        </div>
+                        <div class="input-group mb-3 fixed-bottom">
+                            <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
+                            <button class="btn btn-outline-secondary border-0" type="button" id="message-btn" onclick="sendMessage(false), reloadMessages()"><box-icon name='send'></box-icon></button>
                         </div>
                     </div>
-                </nav>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-3 col-2-sm h-100 d-sm-none d-md-block d-none">
-                <!-- Channels -->
-                <div class="list-group navbar navbar-expand-md" id="channels"></div>
-            </div>
-            <div class="col">
-                <div class="row">
-                    <div class="d-flex flex-column" id="messages" style="overflow: auto; height: 800px;">
-                    </div>
-                    <div class="input-group mb-3 fixed-bottom">
-                        <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
-                        <button class="btn btn-outline-secondary border-0" type="button" id="message-btn" onclick="sendMessage(false), reloadMessages()"><box-icon name='send'></box-icon></button>
-                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal new channel-->
-    <div class="modal fade" id="modalNewChannel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Create new channel</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-floating">
-                        <input type="text" class="form-control" id="channel_name" placeholder="Channel name" oninput="channelExists(this.value, 'new_channel_error')">
-                        <label for="email"><Nav>Name</Nav></label>
+        <!-- Modal new channel-->
+        <div class="modal fade" id="modalNewChannel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Create new channel</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <br>
-                    <ul class="list-group list-group-horizontal" style="display: none;" id="names_of_channel">
-                    </ul>
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-              Members
-            </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="members">
+                    <div class="modal-body">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="channel_name" placeholder="Channel name" oninput="channelExists(this.value, 'new_channel_error')">
+                            <label for="email"><Nav>Name</Nav></label>
+                        </div>
+                        <br>
+                        <ul class="list-group list-group-horizontal" style="display: none;" id="names_of_channel">
                         </ul>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Members
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="members">
+                            </ul>
+                        </div>
+                        <label id="new_channel_error" style="color:#f00"></label><br>
                     </div>
-                    <label id="new_channel_error" style="color:#f00"></label><br>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="createChannel()">Create</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="createChannel()">Create</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal ban user-->
-    <div class="modal fade" id="modalBanUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ban user</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-floating">
-                        <input type="text" class="form-control" id="reason" placeholder="Reason">
-                        <label for="reason"><Nav>Reason</Nav></label>
+        <!-- Modal ban user-->
+        <div class="modal fade" id="modalBanUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Ban user</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <br>
-                    <div class="form-floating">
-                        <input type="number" class="form-control" id="hours" placeholder="24" value="1">
-                        <label for="hours"><Nav>Hours</Nav></label>
-                    </div>
-                    <br>
-                    <ul class="list-group list-group-horizontal" style="display: none;" id="bans">
-                    </ul>
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-              Member
-            </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="members_for_ban">
+                    <div class="modal-body">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="reason" placeholder="Reason">
+                            <label for="reason"><Nav>Reason</Nav></label>
+                        </div>
+                        <br>
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="hours" placeholder="24" value="1">
+                            <label for="hours"><Nav>Hours</Nav></label>
+                        </div>
+                        <br>
+                        <ul class="list-group list-group-horizontal" style="display: none;" id="bans">
                         </ul>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Member
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="members_for_ban">
+                            </ul>
+                        </div>
+                        <label id="ban_error" style="color:#f00"></label><br>
                     </div>
-                    <label id="ban_error" style="color:#f00"></label><br>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="banUser()">Ban</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="banUser()">Ban</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal broadcast message-->
-    <div class="modal fade" id="modalBroadcast" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Send a message in broadcast</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="broadcast_message">
-                        <button class="btn btn-outline-secondary border-0" type="button" id="message-btn" data-bs-dismiss="modal" onclick="sendMessage(true), reloadMessages()"><box-icon name='send'></box-icon></button>
+        <!-- Modal broadcast message-->
+        <div class="modal fade" id="modalBroadcast" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Send a message in broadcast</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <br>
-                    <label id="channel_error" style="color:#f00"></label><br>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="broadcast_message">
+                            <button class="btn btn-outline-secondary border-0" type="button" id="message-btn" data-bs-dismiss="modal" onclick="sendMessage(true), reloadMessages()"><box-icon name='send'></box-icon></button>
+                        </div>
+                        <br>
+                        <label id="channel_error" style="color:#f00"></label><br>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal modify channel-->
-    <div class="modal fade" id="modalModifyChannel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modify <span id="modify_channel_name" oninput="channelExists(this.value)">name</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-floating">
-                        <input type="text" class="form-control" id="modify_channel" placeholder="New Name">
-                        <label for="modify_channel"><Nav>New Name</Nav></label>
+        <!-- Modal modify channel-->
+        <div class="modal fade" id="modalModifyChannel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modify <span id="modify_channel_name" oninput="channelExists(this.value)">name</span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <br>
-                    <div class="form-floating">
-                        <input type="number" class="form-control" id="hours" placeholder="24" value="1">
-                        <label for="hours"><Nav>Hours</Nav></label>
+                    <div class="modal-body">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="modify_channel" placeholder="New Name">
+                            <label for="modify_channel"><Nav>New Name</Nav></label>
+                        </div>
+                        <br>
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="hours" placeholder="24" value="1">
+                            <label for="hours"><Nav>Hours</Nav></label>
+                        </div>
+                        <br>
+                        <ul class="list-group list-group-horizontal" style="display: none;" id="bans">
+                        </ul>
+                        <br>
+                        <label id="new_channel_error" style="color:#f00"></label><br>
                     </div>
-                    <br>
-                    <ul class="list-group list-group-horizontal" style="display: none;" id="bans">
-                    </ul>
-                    <br>
-                    <label id="new_channel_error" style="color:#f00"></label><br>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="banUser()">Ban</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="banUser()">Ban</button>
+                    </div>
                 </div>
             </div>
         </div>

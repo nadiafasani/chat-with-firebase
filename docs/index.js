@@ -206,16 +206,19 @@ function loadChannels() {
             var channel = childSnapshot.key;
             if (snapshot.child(channel).child(user.uid).exists()) {
                 currentChannel = channel;
-                document.getElementById('channels').innerHTML += '<a class="list-group-item list-group-item-action list-group-item-dark" onclick="changeChannel(this.id)" id="' + channel + '">' +
-                    channel +
-                    "<box-icon type='solid' name='edit' class='float-end edit_icon' id='modify_" + channel + "' color='#6a6a6a' data-bs-toggle='modal' data-bs-target='#modalModifyChannel'  onclick='modifyChannel(this.id)'></box-icon>" +
-                    '<button type="button" class="btn-close float-end" onclick="deleteChannel(this.id)" id="' + channel + '"></button>' +
-                    '</a>';
+                document.getElementById('channels').innerHTML += '<li><a class="py-0 fs-6" style="color: #404040;" onclick="changeChannel(this.id)" id="channel">' + channel +
+                    '<box-icon type="solid" name="edit" class="float-end edit_icon" id="modify_"' + channel + '" color="#6a6a6a" data-bs-toggle="modal" data-bs-target="#modalModifyChannel" onclick="modifyChannel(this.id)">' +
+                    '</box-icon><button type="button" class="btn-close float-end" onclick="deleteChannel(this.id)" id="' + channel + '"></button></a></li>';
             }
         });
     });
     reloadMessages();
     showNickname();
+    /*
+    '<li><a class="py-0 fs-6" style="color: #404040;" onclick="changeChannel(this.id)" id="channel">' + channel +
+    '<box-icon type='solid' name='edit' class='float-end edit_icon' id='modify_" + channel + "' color='#6a6a6a' data-bs-toggle='modal' data-bs-target='#modalModifyChannel' onclick='modifyChannel(this.id)'>' +
+    '</box-icon><button type="button" class="btn-close float-end" onclick="deleteChannel(this.id)" id="' + channel + '"></button></a></li>'
+    */
 }
 
 /* Helpers */
