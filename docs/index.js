@@ -50,13 +50,14 @@ function registerNewUser() {
 }
 
 function loginUser() {
+    //deleteOldBans();
     banned = false;
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
 
     db.ref('bans/').once('value', function(snapshot) {
         snapshot.forEach(function(childSnapshot) {
-            var date = new Date(parseInt(childSnapshot.key));
+            var date = new Date(parseInt(childSnapshot.key)).getTime();
             var now = new Date().getTime();
 
             var childData = childSnapshot.val();
@@ -64,19 +65,26 @@ function loginUser() {
             db.ref('users/').once('value', function(snapshot) {
 
                 snapshot.forEach(function(childSnapshot) {
+                    console.log("foreach " + banned);
                     var emailUser = childSnapshot.val().email;
-                    if (email == emailUser && date > now) {
+                    console.log("------------------------")
+                    console.log(childSnapshot.val().uid == childData.banned);
+                    console.log(email == emailUser);
+                    console.log(date > now);
+                    if (email == emailUser && date > now && childSnapshot.val().uid == childData.banned) {
                         document.getElementById('login_error').innerHTML = "Sei stato bannato fino a " + date.toLocaleString();
                         banned = true;
+                        console.log("if " + banned);
+                        console.log(email + " - " + emailUser);
                     }
                 });
-                if (!banned) {
-                    auth.signInWithEmailAndPassword(email, password)
-                        .then((userCredential) => {
-                            window.open("chat.html", "_self");
-                        });
-                }
             });
+            if (!banned) {
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        window.open("chat.html", "_self");
+                    });
+            }
         });
     });
 }
@@ -340,6 +348,21 @@ function loadAdminOption() {
             var childData = childSnapshot.val();
             if (childData.admin) {
                 document.getElementById("admin").style.display = "block";
+            }
+        });
+    });
+}
+
+function deleteOldBans() {
+    db.ref('bans/').once('value', function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+            var date = new Date(parseInt(childSnapshot.key));
+            var now = new Date().getTime();
+
+            var childData = childSnapshot.val();
+            console.log(childSnapshot.key);
+            if (new Date().getTime() > childSnapshot.key) {
+                db.ref('bans/' + childSnapshot.key).remove();
             }
         });
     });
