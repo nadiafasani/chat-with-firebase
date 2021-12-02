@@ -370,3 +370,11 @@ function deleteOldBans() {
         });
     });
 }
+
+function resizeMessagesDiv() {
+    //console.log(screen.height);
+    //console.log(document.getElementById('div_send_message').style.height);
+    console.log(screen.height - document.getElementById('div_send_message').style.height - document.getElementById('open_nav_button').style.height);
+    document.getElementById('messages').style.height = screen.height - document.getElementById('div_send_message').style.height - document.getElementById('open_nav_button').style.height - 100 + "px";
+    //console.log(document.getElementById('messages').style.height);
+}

@@ -24,7 +24,7 @@
 
 </head>
 
-<body onload="loadChannels(), loadAdminOption()">
+<body onload="loadChannels(), loadAdminOption(), resizeMessagesDiv()" onresize="resizeMessagesDiv()">
 
     <div id="mySidebar" class="sidebar bg-secondary">
         <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom border-dark">
@@ -80,14 +80,14 @@
     </div>
 
     <div id="main">
-        <button class="btn btn-light" onclick="openNav()">☰</button>
+        <button class="btn btn-light" onclick="openNav()" id="open_nav_button">☰</button>
         <div class="container-fluid">
             <div class="row">
                 <div class="col">
                     <div class="row">
-                        <div class="d-flex flex-column" id="messages" style="overflow: auto; height: 800px;">
+                        <div class="d-flex flex-column" id="messages" style="overflow: auto;">
                         </div>
-                        <div class="input-group mb-3 fixed-bottom">
+                        <div class="input-group mb-3 fixed-bottom" id="div_send_message">
                             <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message-input">
                             <button class="btn btn-outline-secondary border-0" type="button" id="message-btn" onclick="sendMessage(false), reloadMessages()"><box-icon name='send'></box-icon></button>
                         </div>
