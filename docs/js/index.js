@@ -50,7 +50,6 @@ function registerNewUser() {
 }
 
 function loginUser() {
-    //deleteOldBans();
     banned = false;
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
@@ -80,6 +79,10 @@ function loginUser() {
             }
         });
     });
+}
+
+function logoutUser() {
+    auth.signOut();
 }
 
 /* chat.html */
@@ -215,7 +218,7 @@ function loadChannels() {
             var channel = childSnapshot.key;
             if (snapshot.child(channel).child(user.uid).exists()) {
                 currentChannel = channel;
-                document.getElementById('channels').innerHTML += '<li><a class="py-0 fs-6" style="color: #404040;" onclick="changeChannel(this.id)" id="' + channel + '">' + channel +
+                document.getElementById('channels').innerHTML += '<li><a class="py-0 fs-6 text-dark" style="color: #404040;" onclick="changeChannel(this.id)" id="' + channel + '">' + channel +
                     '<box-icon type="solid" name="edit" class="float-end edit_icon" id="modify_"' + channel + '" color="#6a6a6a" data-bs-toggle="modal" data-bs-target="#modalModifyChannel" onclick="modifyChannel(this.id)">' +
                     '</box-icon><button type="button" class="btn-close float-end" onclick="deleteChannel(this.id)" id="' + channel + '"></button></a></li>';
             }
@@ -357,7 +360,9 @@ function loadAdminOption() {
         snapshot.forEach(function(childSnapshot) {
             var childKey = childSnapshot.key;
             var childData = childSnapshot.val();
-            if (childData.admin) {
+            var uid = firebase.auth().currentUser.uid;
+            if (childData.admin && uid == childData.uid) {
+                console.log("admin");
                 document.getElementById("admin").style.display = "block";
             }
         });

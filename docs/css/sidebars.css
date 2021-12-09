@@ -133,3 +133,7 @@ html {
     transition: margin-left .5s;
     padding: 16px;
 }
+
+#message-input {
+    transition: margin-left .5s;
+}
