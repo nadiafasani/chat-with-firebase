@@ -200,13 +200,36 @@ function channelExists(channel, error_id) {
         });
 }
 
-function getChannelDeleteTime() {
-    db.ref('channels/').once('value', function(snapshot) {
+function deleteOldMessages(channel) {
+    var deleteAfter;
+    db.ref('channels/' + channel).once('value', function(snapshot) {
         snapshot.forEach(function(childSnapshot) {
-            const user = firebase.auth().currentUser;
-            var channel = childSnapshot.key;
-            console.log(snapshot.child(channel).child("deleteAfter").val());
-        })
+            var value = childSnapshot.key;
+            if(value.startsWith("deleteAfter")){
+                deleteAfter = value.split(" ")[1];
+            }
+
+            db.ref("messages/").once("value", function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    if(deleteAfter != undefined) {
+                        const user = firebase.auth().currentUser;
+                        const messages = snapshot.val();
+                        now = Date.now();
+                        console.log("deleteafter: " + deleteAfter);
+
+                        time = new Date(parseInt(childSnapshot.key)).getTime() + parseInt(deleteAfter)*3600000;
+                        console.log(now);
+                        console.log(time);
+                        console.log("----------------");
+                        if(time > now){
+                            console.log("if entra");
+                            //db.ref('messages/' + childSnapshot.key).remove();
+                        }
+                    }
+                    
+                });
+            });
+        });
     });
 }
 
@@ -237,7 +260,7 @@ function checkEmail() {
     }
 }
 
-/* create message element */
+/* creare nuova riga per la chat */
 function getChatBox(nickname, message, floatRight, broadcast) {
     var strong = document.createElement("strong");
     strong.textContent = nickname + (broadcast ? " in Broadcast" : "");
@@ -309,6 +332,10 @@ function openModifyChannel(channel) {
     modalModifyChannel.show;
 }
 
+function modifyChannel() {
+
+}
+
 function addToBan(user) {
     if (document.getElementById('bans').style.display == 'none') {
         document.getElementById('bans').style.display = 'block';
@@ -362,7 +389,6 @@ function loadAdminOption() {
             var childData = childSnapshot.val();
             var uid = firebase.auth().currentUser.uid;
             if (childData.admin && uid == childData.uid) {
-                console.log("admin");
                 document.getElementById("admin").style.display = "block";
             }
         });
@@ -386,7 +412,7 @@ function deleteOldBans() {
 function resizeMessagesDiv() {
     document.getElementById('messages').style.height = screen.height -
         document.getElementById('div_send_message').style.height -
-        document.getElementById('open_nav_button').style.height - 100 + "px";
+        document.getElementById('open_nav_button').style.height - 150 + "px";
 }
 
 function onEnterSendMessage() {
