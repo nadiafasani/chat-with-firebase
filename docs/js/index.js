@@ -30,7 +30,7 @@ function registerNewUser() {
     var nickname = document.getElementById("nickname").value;
     var uid;
 
-    // creare account
+    // creare nuovo account
     auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
             var uid = userCredential.user.uid;
@@ -87,7 +87,7 @@ function logoutUser() {
 
 /* chat.html */
 
-// send message to db
+// inviare messaggi al DB
 function sendMessage(broadcast) {
 
     // get values to be submitted
@@ -98,7 +98,6 @@ function sendMessage(broadcast) {
 
     if (message.trim()) {
         var uid = firebase.auth().currentUser.uid;
-        // create db collection and send in the data
         db.ref("messages/" + timestamp).set({
             uid,
             channel: currentChannel,
@@ -109,7 +108,7 @@ function sendMessage(broadcast) {
     messageInput.value = "";
 }
 
-// check for new messages using the onChildAdded event listener
+// controllare se ci sono vuoi messaggi
 db.ref("messages/").on("child_added", function(snapshot) {
     const user = firebase.auth().currentUser;
     const messages = snapshot.val();
@@ -121,6 +120,7 @@ db.ref("messages/").on("child_added", function(snapshot) {
     });
 });
 
+// mostrare tutti gli utenti nel dropdown per il nuovo canale
 function viewAllUsers() {
     var dropdown = document.getElementById('members');
     var dropdown2 = document.getElementById('members_for_ban');
@@ -140,6 +140,7 @@ function viewAllUsers() {
     });
 }
 
+// aggiungere un utente del dropdown al canale
 function addToChannel(nickname) {
     if (document.getElementById('names_of_channel').style.display == 'none') {
         document.getElementById('names_of_channel').style.display = 'block';
@@ -148,6 +149,7 @@ function addToChannel(nickname) {
     document.getElementById('names_of_channel').innerHTML += '<li class="list-group-item list-group-item-action list-group-item-dark" onclick="this.remove()" id="' + nickname + '">' + nickname + '</li>';
 }
 
+// creare un nuovo canale
 function createChannel() {
     var channel = document.getElementById('channel_name').value;
     var deleteAfter = document.getElementById('channel_delete_after').value;
@@ -189,6 +191,7 @@ function createChannel() {
     loadChannels();
 }
 
+// controllare se un canale esiste già
 function channelExists(channel, error_id) {
     db.ref("channels").once("value")
         .then(function(snapshot) {
@@ -200,6 +203,7 @@ function channelExists(channel, error_id) {
         });
 }
 
+// rimuovere i vecchi messaggi
 function deleteOldMessages(channel) {
     var deleteAfter;
     db.ref('channels/' + channel).once('value', function(snapshot) {
@@ -233,6 +237,7 @@ function deleteOldMessages(channel) {
     });
 }
 
+// caricare nella sidebar tutti i canali dell'utente
 function loadChannels() {
     document.getElementById('channels').innerHTML = "";
     db.ref('channels/').once('value', function(snapshot) {
@@ -249,15 +254,6 @@ function loadChannels() {
     });
     reloadMessages();
     showNickname();
-}
-
-/* Helpers */
-function checkEmail() {
-    email = document.getElementById('email').value;
-    if (!email.match(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/)) {
-        alert("Inserire un indirizzo email valido");
-        document.getElementById('email').value = "";
-    }
 }
 
 /* creare nuova riga per la chat */
@@ -278,11 +274,13 @@ function getChatBox(nickname, message, floatRight, broadcast) {
     return divRow;
 }
 
+// cambiare il canale corrente
 function changeChannel(channel) {
     currentChannel = channel;
     reloadMessages();
 }
 
+// mostrare nella sidebar il nickname dell'utente
 function showNickname() {
     db.ref("users/").orderByChild("name").on("child_added", function(data) {
         const user = firebase.auth().currentUser;
@@ -292,14 +290,14 @@ function showNickname() {
     });
 }
 
+// ricaricare i messaggi del canale corrente
 function reloadMessages() {
     const divMessages = document.getElementById("messages");
     divMessages.innerHTML = "";
     while (divMessages.lastElementChild) {
         divMessages.removeChild(divMessages.lastElementChild);
     }
-
-    // check for new messages using the onChildAdded event listener
+    
     db.ref("messages/").on("child_added", function(snapshot) {
         const user = firebase.auth().currentUser;
         const messages = snapshot.val();
@@ -312,6 +310,7 @@ function reloadMessages() {
     });
 }
 
+// eliminare un canale
 function deleteChannel(channel) {
     db.ref('channels/' + channel).remove();
     loadChannels();
@@ -325,6 +324,7 @@ function deleteChannel(channel) {
     });
 }
 
+// aprire il form di modifica dei canali
 function openModifyChannel(channel) {
     channel = channel.substring(7);
     modalModifyChannel = document.getElementById('modalModifyChannel');
@@ -332,10 +332,12 @@ function openModifyChannel(channel) {
     modalModifyChannel.show;
 }
 
+// modificare un canale
 function modifyChannel() {
 
 }
 
+// aggiungere l'utente da bannare
 function addToBan(user) {
     if (document.getElementById('bans').style.display == 'none') {
         document.getElementById('bans').style.display = 'block';
@@ -346,6 +348,7 @@ function addToBan(user) {
     }
 }
 
+// bannare un utente
 function banUser() {
     var reason = document.getElementById('reason').value;
     var hours = document.getElementById('hours').value;
@@ -382,6 +385,7 @@ function banUser() {
         });
 }
 
+// caricare nella sidebar la possibilità di inviare messaggi in broadcast
 function loadAdminOption() {
     db.ref('users/').once('value', function(snapshot) {
         snapshot.forEach(function(childSnapshot) {
@@ -395,36 +399,20 @@ function loadAdminOption() {
     });
 }
 
-function deleteOldBans() {
-    db.ref('bans/').once('value', function(snapshot) {
-        snapshot.forEach(function(childSnapshot) {
-            var date = new Date(parseInt(childSnapshot.key));
-            var now = new Date().getTime();
-
-            var childData = childSnapshot.val();
-            if (new Date().getTime() > childSnapshot.key) {
-                db.ref('bans/' + childSnapshot.key).remove();
-            }
-        });
-    });
-}
-
+// al resize verticale della finestra adattare dinamicamente l'altezza del div con i messaggi
 function resizeMessagesDiv() {
     document.getElementById('messages').style.height = screen.height -
         document.getElementById('div_send_message').style.height -
         document.getElementById('open_nav_button').style.height - 150 + "px";
 }
 
+// permette di poter inviare messaggi premendo il tasto Enter
 function onEnterSendMessage() {
     var input = document.getElementById("message-input");
 
-    // Execute a function when the user releases a key on the keyboard
     input.addEventListener("keyup", function(event) {
-        // Number 13 is the "Enter" key on the keyboard
         if (event.code === "Enter") {
-            // Cancel the default action, if needed
             event.preventDefault();
-            // Trigger the button element with a click
             document.getElementById("message-btn").click();
         }
     });
