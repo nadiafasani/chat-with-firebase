@@ -209,28 +209,28 @@ function deleteOldMessages(channel) {
     db.ref('channels/' + channel).once('value', function(snapshot) {
         snapshot.forEach(function(childSnapshot) {
             var value = childSnapshot.key;
-            if(value.startsWith("deleteAfter")){
+            if (value.startsWith("deleteAfter")) {
                 deleteAfter = value.split(" ")[1];
             }
 
             db.ref("messages/").once("value", function(snapshot) {
                 snapshot.forEach(function(childSnapshot) {
-                    if(deleteAfter != undefined) {
+                    if (deleteAfter != undefined) {
                         const user = firebase.auth().currentUser;
                         const messages = snapshot.val();
                         now = Date.now();
                         console.log("deleteafter: " + deleteAfter);
 
-                        time = new Date(parseInt(childSnapshot.key)).getTime() + parseInt(deleteAfter)*3600000;
+                        time = new Date(parseInt(childSnapshot.key)).getTime() + parseInt(deleteAfter) * 3600000;
                         console.log(now);
                         console.log(time);
                         console.log("----------------");
-                        if(time > now){
+                        if (time > now) {
                             console.log("if entra");
                             //db.ref('messages/' + childSnapshot.key).remove();
                         }
                     }
-                    
+
                 });
             });
         });
@@ -247,7 +247,7 @@ function loadChannels() {
             if (snapshot.child(channel).child(user.uid).exists()) {
                 currentChannel = channel;
                 document.getElementById('channels').innerHTML += '<li><a class="py-0 fs-6 text-dark" style="color: #404040;" onclick="changeChannel(this.id)" id="' + channel + '">' + channel +
-                    '<box-icon type="solid" name="edit" class="float-end edit_icon" id="modify_"' + channel + '" color="#6a6a6a" data-bs-toggle="modal" data-bs-target="#modalModifyChannel" onclick="modifyChannel(this.id)">' +
+                    '<box-icon type="solid" name="edit" class="float-end edit_icon" id="modify_' + channel + '" color="#6a6a6a" data-bs-toggle="modal" data-bs-target="#modalModifyChannel" onclick="openModifyChannel(this.id)">' +
                     '</box-icon><button type="button" class="btn-close float-end" onclick="deleteChannel(this.id)" id="' + channel + '"></button></a></li>';
             }
         });
@@ -297,7 +297,7 @@ function reloadMessages() {
     while (divMessages.lastElementChild) {
         divMessages.removeChild(divMessages.lastElementChild);
     }
-    
+
     db.ref("messages/").on("child_added", function(snapshot) {
         const user = firebase.auth().currentUser;
         const messages = snapshot.val();
@@ -334,7 +334,11 @@ function openModifyChannel(channel) {
 
 // modificare un canale
 function modifyChannel() {
-
+    channel = document.getElementById('modify_channel_name').value;
+    newName = document.getElementById('channel_new').value;
+    newHours = document.getElementById('hours_new');
+    //myRef.child("someChild").child("name").setValue(name)
+    db.ref('channels/' + channel).update({ 'deleteAfter': newHours });
 }
 
 // aggiungere l'utente da bannare
