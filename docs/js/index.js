@@ -23,7 +23,7 @@ const user = firebase.auth().currentUser;
 var banned = false;
 var currentChannel;
 
-/* index.html */
+//#region index.html
 function registerNewUser() {
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
@@ -84,8 +84,9 @@ function loginUser() {
 function logoutUser() {
     auth.signOut();
 }
+//#endregion
 
-/* chat.html */
+//#region chat.html
 
 // inviare messaggi al DB
 function sendMessage(broadcast) {
@@ -108,7 +109,7 @@ function sendMessage(broadcast) {
     messageInput.value = "";
 }
 
-// controllare se ci sono vuoi messaggi
+// controllare se ci sono nuovi messaggi
 db.ref("messages/").on("child_added", function(snapshot) {
     const user = firebase.auth().currentUser;
     const messages = snapshot.val();
@@ -398,6 +399,7 @@ function loadAdminOption() {
             var uid = firebase.auth().currentUser.uid;
             if (childData.admin && uid == childData.uid) {
                 document.getElementById("admin").style.display = "block";
+                document.getElementById("ban_button").style.display = "block";
             }
         });
     });
@@ -421,3 +423,4 @@ function onEnterSendMessage() {
         }
     });
 }
+//#endregion
