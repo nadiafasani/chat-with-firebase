@@ -137,3 +137,7 @@ html {
 #message-input {
     transition: margin-left .5s;
 }
+
+#open_nav_button {
+    transition: margin-left .5s;
+}

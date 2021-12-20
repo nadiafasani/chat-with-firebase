@@ -207,6 +207,7 @@ function channelExists(channel, error_id) {
 // rimuovere i vecchi messaggi
 function deleteOldMessages(channel) {
     var deleteAfter;
+    console.log(channel);
     db.ref('channels/' + channel).once('value', function(snapshot) {
         snapshot.forEach(function(childSnapshot) {
             var value = childSnapshot.key;
@@ -226,9 +227,8 @@ function deleteOldMessages(channel) {
                         console.log(now);
                         console.log(time);
                         console.log("----------------");
-                        if (time > now) {
-                            console.log("if entra");
-                            //db.ref('messages/' + childSnapshot.key).remove();
+                        if (time < now) {
+                            db.ref('messages/' + childSnapshot.key).remove();
                         }
                     }
 
@@ -247,7 +247,7 @@ function loadChannels() {
             var channel = childSnapshot.key;
             if (snapshot.child(channel).child(user.uid).exists()) {
                 currentChannel = channel;
-                document.getElementById('channels').innerHTML += '<li><a class="py-0 fs-6 text-dark" style="color: #404040;" onclick="changeChannel(this.id)" id="' + channel + '">' + channel +
+                document.getElementById('channels').innerHTML += '<li><a class="py-0 fs-6 text-dark" style="color: #404040;" onclick="changeChannel(this.id), deleteOldMessages(this.id)" id="' + channel + '">' + channel +
                     '<box-icon type="solid" name="edit" class="float-end edit_icon" id="modify_' + channel + '" color="#6a6a6a" data-bs-toggle="modal" data-bs-target="#modalModifyChannel" onclick="openModifyChannel(this.id)">' +
                     '</box-icon><button type="button" class="btn-close float-end" onclick="deleteChannel(this.id)" id="' + channel + '"></button></a></li>';
             }
